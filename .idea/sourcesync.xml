@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="SourceSyncRemoteConfigurationsService"><![CDATA[{
+  "connections": [
+    {
+      "type": "ssh_configuration",
+      "name": "WildCord",
+      "hostname": "51.38.135.204",
+      "port": "2223",
+      "username": "wildcord2"
+    }
+  ]
+}]]></component>
+</project>
