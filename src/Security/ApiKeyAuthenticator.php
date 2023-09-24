@@ -28,10 +28,6 @@ class ApiKeyAuthenticator extends AbstractAuthenticator
     public function supports(Request $request): ?bool
     {
         return true;
-//        if ($request->headers->has(self::HEADER_AUTH_NAME)) {
-//            return true;
-//        }
-//        throw new CustomUserMessageAuthenticationException('No apikey provided');
     }
 
     public function authenticate(Request $request): Passport

@@ -18,8 +18,8 @@ class User implements UserInterface
     #[ORM\Column(length: 180, unique: true)]
     private string $username;
 
-    #[ORM\Column(unique: true)]
-    private string $apikey;
+    #[ORM\Column(unique: true, nullable: true)]
+    private ?string $apikey;
 
     #[ORM\Column]
     private array $roles = [];
@@ -48,7 +48,7 @@ class User implements UserInterface
      */
     public function getUserIdentifier(): string
     {
-        return (string) $this->username;
+        return (string)$this->username;
     }
 
     /**
@@ -75,7 +75,5 @@ class User implements UserInterface
      */
     public function eraseCredentials(): void
     {
-        // If you store any temporary, sensitive data on the user, clear it here
-        // $this->plainPassword = null;
     }
 }
