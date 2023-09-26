@@ -15,13 +15,6 @@ final class ExceptionListener
     {
         $exception = $event->getThrowable();
 
-        $error = [
-            'http_code' => 500,
-            'message' => 'Internal Server Error',
-            'code' => 109,
-            'description' => 'Internal Server Error',
-        ];
-
         if ($exception instanceof HttpException) {
             if ($exception->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
                 $error = [
@@ -39,6 +32,13 @@ final class ExceptionListener
                 ];
             }
         }
+
+        $error ??= [
+            'http_code' => 500,
+            'message' => 'Internal Server Error',
+            'code' => 109,
+            'description' => 'Internal Server Error',
+        ];
 
         if (!$error) {
             return;
