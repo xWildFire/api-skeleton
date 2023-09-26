@@ -7,38 +7,38 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 final class ExceptionListener
 {
+    public function __construct(private readonly KernelInterface $kernel)
+    {
+
+    }
+
     #[AsEventListener]
     public function onResponse(ExceptionEvent $event): void
     {
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpException) {
-            if ($exception->getStatusCode() === Response::HTTP_UNAUTHORIZED) {
-                $error = [
-                    'http_code' => 401,
-                    'message' => 'Unauthorized',
-                    'code' => 100,
-                    'description' => 'Unauthorized Apikey',
-                ];
-            } elseif ($exception->getStatusCode() === Response::HTTP_NOT_FOUND) {
-                $error = [
-                    'http_code' => 404,
-                    'message' => 'Not Found',
-                    'code' => 101,
-                    'description' => 'Not Found',
-                ];
-            }
+            $error = [
+                'http_code' => $exception->getStatusCode(),
+                'message' => Response::$statusTexts[$exception->getStatusCode()],
+                'description' => $exception->getMessage(),
+            ];
+        } else {
+            $error = [
+                'http_code' => 500,
+                'message' => 'Internal Server Error',
+                'description' => 'Internal Server Error',
+            ];
         }
 
-        $error ??= [
-            'http_code' => 500,
-            'message' => 'Internal Server Error',
-            'code' => 109,
-            'description' => 'Internal Server Error',
-        ];
+        if ($this->kernel->isDebug() || $this->kernel->getEnvironment() === 'dev') {
+            $error['description'] = "{$exception->getMessage()} (line: {$exception->getLine()}, file: {$exception->getFile()})";
+            $error['trace'] = $exception->getTrace();
+        }
 
         if (!$error) {
             return;
@@ -47,14 +47,9 @@ final class ExceptionListener
         $event->setResponse(new JsonResponse([
             'status' => false,
             'data' => [
-                'available' => false
+                'available' => false,
             ],
-            'error' => [
-                'http_code' => $error['http_code'],
-                'message' => $error['message'],
-                'code' => $error['code'],
-                'description' => $error['description']
-            ]
+            'error' => $error,
         ], $error['http_code']));
     }
 }
