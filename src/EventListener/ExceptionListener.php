@@ -2,6 +2,7 @@
 
 namespace App\EventListener;
 
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 final class ExceptionListener
 {
-    public function __construct(private readonly KernelInterface $kernel)
+    public function __construct(private readonly KernelInterface $kernel, private readonly LoggerInterface $logger)
     {
 
     }
@@ -19,6 +20,9 @@ final class ExceptionListener
     #[AsEventListener]
     public function onResponse(ExceptionEvent $event): void
     {
+        if (!$event->isMainRequest()) {
+            return;
+        }
         $exception = $event->getThrowable();
 
         if ($exception instanceof HttpException) {
@@ -38,10 +42,22 @@ final class ExceptionListener
         if ($this->kernel->isDebug() || $this->kernel->getEnvironment() === 'dev') {
             $error['description'] = "{$exception->getMessage()} (line: {$exception->getLine()}, file: {$exception->getFile()})";
             $error['trace'] = $exception->getTrace();
+
+            $previous = $exception->getPrevious();
+            if ($previous !== null) {
+                $error['previous'] = [
+                    'description' => "{$previous->getMessage()} (line: {$previous->getLine()}, file: {$previous->getFile()})",
+                    'trace' => $previous->getTrace(),
+                ];
+            }
         }
 
         if (!$error) {
             return;
+        }
+
+        if ($error['http_code'] >= 500) {
+            $this->logger->critical($exception);
         }
 
         $event->setResponse(new JsonResponse([

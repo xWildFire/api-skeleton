@@ -12,7 +12,12 @@ class GetDataController extends AbstractController
     public function index(): JsonResponse
     {
         return $this->json([
-            'message' => 'getdata!',
+            'status' => true,
+            'data' => [
+                'method' => 'getdata',
+                'hello' => 'world',
+            ],
+            'error' => null,
         ]);
     }
 }
