@@ -8,23 +8,19 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 
-class GetDataController extends AbstractController
+class FlushController extends AbstractController
 {
-    #[Route('/getdata', name: 'getdata')]
+    #[Route('/flush', name: 'flush')]
     public function index(CacheInterface $cache): JsonResponse
     {
-        $data = $cache->get('getdata', function (ItemInterface $cache) {
-            $cache->expiresAfter(60);
-
-            return [
-                'method' => 'getdata',
-                'random' => random_int(0, 99999),
-            ];
-        });
+        $data = $cache->delete('getdata');
 
         return $this->json([
             'status' => true,
-            'data' => $data,
+            'data' => [
+                'method' => 'flush',
+                'random' => random_int(0, 99999),
+            ],
             'error' => null,
         ]);
     }
