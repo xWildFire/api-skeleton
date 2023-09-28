@@ -19,7 +19,7 @@ class FlushController extends AbstractController
             'status' => true,
             'data' => [
                 'method' => 'flush',
-                'random' => random_int(0, 99999),
+                'flushed' => $data,
             ],
             'error' => null,
         ]);
