@@ -14,4 +14,4 @@ services:
 ###< symfony/mailer ###
 
   cache:
-    ports: ["11211:11211"]
+    ports: ["6379:6379"]

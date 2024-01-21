@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230924081446 extends AbstractMigration
+final class Version20240121183710 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -35,8 +35,8 @@ final class Version20230924081446 extends AbstractMigration
         );
 
         $this->addSql('CREATE TABLE cfg."user" (id INT NOT NULL, username VARCHAR(180) NOT NULL, apikey VARCHAR(255) DEFAULT NULL, roles JSON NOT NULL, PRIMARY KEY(id))');
-        $this->addSql('CREATE UNIQUE INDEX uniq_14f7a63cb84757a1 ON cfg."user" (apikey)');
         $this->addSql('CREATE UNIQUE INDEX uniq_14f7a63cf85e0677 ON cfg."user" (username)');
+        $this->addSql('CREATE UNIQUE INDEX uniq_14f7a63cb84757a1 ON cfg."user" (apikey)');
     }
 
     public function down(Schema $schema): void
